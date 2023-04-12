@@ -39,6 +39,13 @@ sub subb {
 
 	$a =~ tr/ //ds;
 	$b =~ tr/ //ds;
+
+	if(!a_greater($a,$b,$ctx)){
+		print "$a\n-$b\CANT SUBSTRACT NEGATIVE \n";
+		return 0;
+	}
+
+
 	my @a = split('', $a);
 	my @b = split('', $b); 
 	my $ctx_mod = length($ctx);

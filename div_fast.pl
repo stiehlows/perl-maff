@@ -1,37 +1,3 @@
-$ansatz = "sagen wir al ich ha ne feste zahl
-
-3333
-
-jezer gitbs ne geheime zahl
-
-und die gibt ti der 3333
-
-
-7598735893798753948
-
-
-3333 * geheim = bkanntes
-
-";
-
-require "./calc.pl";
-
-sub itzibitziverschiptizinitzidizizpiziwitzi123ohnenix {
-	$nixnullkokkmaneun = shift;
-	
-	@batzen = split('',$nixnullkokkmaneun);
-
-	while(scalar @batzen){
-	}
-}
-
-	
-
-
-sub newton_zeight_wie_es_geht_vor_gallileo {
-	($so_wirds_gemacht,$studien_ergbeen,$bummsdreck) = (@_);
-}
-
 
 $sgdfgdf = "
 
@@ -63,7 +29,6 @@ sub fast_div {
 		my $i = 0;
 		my $merk = 0;
 
-	print "l $l_p\n";
 		while(1){	
 
 			$merk = add($merk,$b,$ctx);
@@ -77,15 +42,14 @@ sub fast_div {
 
 			$i = add($i,1,$ctx);
 		};
-print "m $merk\n";
 		end_this_part:
 
 		if(!a_greater($i,0,$ctx)){
 			print("we retrN?\n");
-			return 0;
+			return (0,$l_p);
 		}
 		else{
-			$res = "$res"."$i";
+			$res = "$res".$i;
 		}
 		
 		my $rest = subb($l_p,$merk,$ctx);
@@ -98,5 +62,8 @@ print "m $merk\n";
 			$a = $r_p;
 		}
 	}
+
 	return $res;
 }
+
+1;
