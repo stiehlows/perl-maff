@@ -1,4 +1,3 @@
-
 $G = "04 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8"	;
 
 
@@ -25,51 +24,114 @@ sub subtr {
 	#a = c + b
 	#a = b + ?
 	my $res = 0;	
+	my $i = 0;
 	while(a_greater($a,add($b,$res,$ctx),$ctx)){
 		$res = add($res,1,$ctx);
+		$i++;
 	}
 
+	$res =~ s/^0+/0/g;
 	return $res;
 }
 
-sub add {
-	(my $a, my $b, my $ctx, my $aref) = (@_);
+sub subb {
+	(my $a, my $b, my $ctx) = (@_);
+
 	$a =~ tr/ //ds;
 	$b =~ tr/ //ds;
 	my @a = split('', $a);
 	my @b = split('', $b); 
-	my $ctx_mod = length($ctx)-1;
+	my $ctx_mod = length($ctx);
 	my $len = scalar @a;
 	if(scalar @a < scalar @b){
 		$len = scalar @b;
 	}
-	my $carry = 0;
+	my @c = ();
 	my @result = ();
 	for(my $i=0; $i<$len; $i++){
 		my $a_ = pop(@a);
 		my $b_ = pop(@b);
+		my $c_ = pop(@c);
 		my $a_idx = index($ctx,$a_);
 		my $b_idx = index($ctx,$b_);
-	
-		my $res = $a_idx+$b_idx+$carry;
+		my $c_idx = index($ctx,$c_);
+		my $res = $a_idx-$b_idx-$c_idx;
 		my $digit_res = $res;
-		if($digit_res > $ctx_mod){
-			$digit_res = ($res % $ctx_mod);
-			$carry = $res - $ctx_mod;
+
+		if($res < 0){
+			$digit_res = (-$res % $ctx_mod);
+			$carry = int(-$res / $ctx_mod);
+			push(@c, reverse split('',$carry));
+
 		}
+
 		else{
-			$carry = 0;
+			push(@c, 0);
 		}
 
 		push(@result,(substr $ctx,$digit_res,1));
 	}
-	if($carry != 0){
-		push(@result, (substr $ctx, $carry, 1));
-	}
+	
 
-	$$aref = join('',reverse @result);
-	return join('',reverse @result);
-}
+
+	for my $c_ (@c){
+		push(@result, (substr $ctx, $c_,1));
+	}
+	my $final_res = join('', reverse @result);
+	$final_res =~ s/^0+//g;
+	return $final_res;
+};
+
+
+
+
+sub add {
+	(my $a, my $b, my $ctx) = (@_);
+
+	$a =~ tr/ //ds;
+	$b =~ tr/ //ds;
+	my @a = split('', $a);
+	my @b = split('', $b); 
+	my $ctx_mod = length($ctx);
+	my $len = scalar @a;
+	if(scalar @a < scalar @b){
+		$len = scalar @b;
+	}
+	my @c = ();
+	my @result = ();
+	for(my $i=0; $i<$len; $i++){
+		my $a_ = pop(@a);
+		my $b_ = pop(@b);
+		my $c_ = pop(@c);
+		my $a_idx = index($ctx,$a_);
+		my $b_idx = index($ctx,$b_);
+		my $c_idx = index($ctx,$c_);
+		my $res = $a_idx+$b_idx+$c_idx;
+		my $digit_res = $res;
+
+		if($res >= $ctx_mod){
+			$digit_res = ($res % $ctx_mod);
+			$carry = int($res / $ctx_mod);
+			push(@c, reverse split('',$carry));
+
+		}
+
+		else{
+			push(@c, 0);
+		}
+
+		push(@result,(substr $ctx,$digit_res,1));
+	}
+	
+
+
+	for my $c_ (@c){
+		push(@result, (substr $ctx, $c_,1));
+	}
+	my $final_res = join('', reverse @result);
+	$final_res =~ s/^0+//g;
+	return $final_res;
+};
 
 sub mod_ctx {
 	(my $n, my $ctx, my $digits) = (@_);
@@ -153,8 +215,6 @@ print "\ns $space m $mod\n";
 }
 		
 
-
-
 sub a_ge {
 	(my $x, my $y, my $ctx) = (@_);
 	if(a_greater($x,$y,$ctx) || ''.$x eq ''.$y){
@@ -174,13 +234,13 @@ sub a_greater {
 	my @x = split('',$x);
 	my @y = split('',$y);
 
-	for my $d (@x){
-		$x[$d] = ctx_v($x[$d],$ctx);
-		$y[$d] = ctx_v($y[$d],$ctx);
-		if($x[$d] > $y[$d]){
+	for(my $i=0; $i<scalar @x; $i++){
+		$x[$i] = ctx_v($x[$i],$ctx);
+		$y[$i] = ctx_v($y[$i],$ctx);
+		if($x[$i] > $y[$i]){
 			return 1;
 		}
-		if($x[$d] < $y[$d]){
+		if($x[$i] < $y[$i]){
 			return 0;
 		}
 	}
@@ -203,8 +263,4 @@ sub modulo {
 	return $res;
 }
 
-print modulo(10,4,$decimal_c);
-print "\n";
-print div(100,33,$decimal_c);
-print "\n";
 1;
